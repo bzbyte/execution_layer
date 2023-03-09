@@ -158,8 +158,7 @@ pub struct Claims {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::DEFAULT_JWT_SECRET;
-
+    const DEFAULT_JWT_SECRET: [u8; 32] = [42; 32];
     #[test]
     fn test_roundtrip() {
         let auth = Auth::new(

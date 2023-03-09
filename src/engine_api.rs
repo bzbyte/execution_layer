@@ -1,30 +1,45 @@
-use crate::engines::ForkchoiceState;
+use crate::engine_api::ethspec::EthSpec;
+use crate::engine_api::execution_payload::ExecutionPayload;
+use crate::engine_api::execution_payload::ExecutionPayloadCapella;
+use crate::engine_api::execution_payload::ExecutionPayloadMerge;
+use crate::engine_api::execution_payload::Hash256;
 use crate::engine_api::http::{
     ENGINE_EXCHANGE_TRANSITION_CONFIGURATION_V1, ENGINE_FORKCHOICE_UPDATED_V1,
     ENGINE_FORKCHOICE_UPDATED_V2, ENGINE_GET_PAYLOAD_V1, ENGINE_GET_PAYLOAD_V2,
     ENGINE_NEW_PAYLOAD_V1, ENGINE_NEW_PAYLOAD_V2,
 };
-pub use ethers_core::types::Transaction;
+use crate::engine_api::json_structures::ExecutionBlockHash;
+use crate::engine_api::json_structures::{JsonExecutionPayloadV1, JsonExecutionPayloadV2};
+use crate::engine_api::withdrawal::Withdrawal;
+use crate::serde_utils as eth2_serde_utils;
+use ethereum_types::U256 as Uint256;
+use ethers_core::types::Transaction;
 use ethers_core::utils::rlp::{self, Decodable, Rlp};
 use http::deposit_methods::RpcError;
-pub use json_structures::{JsonWithdrawal, TransitionConfigurationV1};
+use json_structures::JsonWithdrawal;
 use reqwest::StatusCode;
 use serde::{Deserialize, Serialize};
+use ssz_types::{FixedVector, VariableList};
 use std::convert::TryFrom;
 use strum::IntoStaticStr;
 use superstruct::superstruct;
-pub use types::{
-    Address, EthSpec, ExecutionBlockHash, ExecutionPayload, ExecutionPayloadHeader,
-    ExecutionPayloadRef, FixedVector, ForkName, Hash256, Uint256, VariableList, Withdrawal,
-};
-use types::{ExecutionPayloadCapella, ExecutionPayloadEip4844, ExecutionPayloadMerge};
 
 pub mod auth;
+pub mod ethspec;
+pub mod execution_payload;
 pub mod http;
 pub mod json_structures;
-
+pub mod sensitive_url;
+pub mod withdrawal;
+pub use ethereum_types::Address;
 pub const LATEST_TAG: &str = "latest";
 
+#[derive(Copy, Clone, PartialEq, Debug)]
+pub struct ForkchoiceState {
+    pub head_block_hash: ExecutionBlockHash,
+    pub safe_block_hash: ExecutionBlockHash,
+    pub finalized_block_hash: ExecutionBlockHash,
+}
 pub type PayloadId = [u8; 8];
 
 #[derive(Debug)]
@@ -48,7 +63,6 @@ pub enum Error {
     DeserializeTransaction(ssz_types::Error),
     DeserializeTransactions(ssz_types::Error),
     DeserializeWithdrawals(ssz_types::Error),
-    BuilderApi(builder_client::Error),
     IncorrectStateVariant,
     RequiredMethodUnsupported(&'static str),
     UnsupportedForkVariant(String),
@@ -78,12 +92,6 @@ impl From<serde_json::Error> for Error {
 impl From<auth::Error> for Error {
     fn from(e: auth::Error) -> Self {
         Error::Auth(e)
-    }
-}
-
-impl From<builder_client::Error> for Error {
-    fn from(e: builder_client::Error) -> Self {
-        Error::BuilderApi(e)
     }
 }
 
@@ -320,10 +328,9 @@ pub struct ProposeBlindedBlockResponse {
 }
 
 #[superstruct(
-    variants(Merge, Capella, Eip4844),
+    variants(Merge, Capella),
     variant_attributes(derive(Clone, Debug, PartialEq),),
     map_into(ExecutionPayload),
-    map_ref_into(ExecutionPayloadRef),
     cast_error(ty = "Error", expr = "Error::IncorrectStateVariant"),
     partial_getter_error(ty = "Error", expr = "Error::IncorrectStateVariant")
 )]
@@ -333,17 +340,7 @@ pub struct GetPayloadResponse<T: EthSpec> {
     pub execution_payload: ExecutionPayloadMerge<T>,
     #[superstruct(only(Capella), partial_getter(rename = "execution_payload_capella"))]
     pub execution_payload: ExecutionPayloadCapella<T>,
-    #[superstruct(only(Eip4844), partial_getter(rename = "execution_payload_eip4844"))]
-    pub execution_payload: ExecutionPayloadEip4844<T>,
     pub block_value: Uint256,
-}
-
-impl<'a, T: EthSpec> From<GetPayloadResponseRef<'a, T>> for ExecutionPayloadRef<'a, T> {
-    fn from(response: GetPayloadResponseRef<'a, T>) -> Self {
-        map_get_payload_response_ref_into_execution_payload_ref!(&'a _, response, |inner, cons| {
-            cons(&inner.execution_payload)
-        })
-    }
 }
 
 impl<T: EthSpec> From<GetPayloadResponse<T>> for ExecutionPayload<T> {
@@ -365,17 +362,36 @@ impl<T: EthSpec> From<GetPayloadResponse<T>> for (ExecutionPayload<T>, Uint256) 
                 ExecutionPayload::Capella(inner.execution_payload),
                 inner.block_value,
             ),
-            GetPayloadResponse::Eip4844(inner) => (
-                ExecutionPayload::Eip4844(inner.execution_payload),
-                inner.block_value,
-            ),
         }
     }
 }
 
-impl<T: EthSpec> GetPayloadResponse<T> {
-    pub fn execution_payload_ref(&self) -> ExecutionPayloadRef<T> {
-        self.to_ref().into()
+/// Serializable version of GetPayloadResponse.
+/// Per-version payload + block number
+#[derive(Debug, Serialize, Deserialize)]
+pub enum GetJsonPayloadResponse<T: EthSpec> {
+    V1(JsonExecutionPayloadV1<T>, Uint256),
+    V2(JsonExecutionPayloadV2<T>, Uint256),
+}
+
+impl<T: EthSpec> From<GetJsonPayloadResponse<T>> for ExecutionPayload<T> {
+    fn from(json_payload: GetJsonPayloadResponse<T>) -> ExecutionPayload<T> {
+        match json_payload {
+            GetJsonPayloadResponse::V1(json_payload, block_value) => {
+                GetPayloadResponse::Merge(GetPayloadResponseMerge {
+                    execution_payload: json_payload.into(),
+                    block_value,
+                })
+                .into()
+            }
+            GetJsonPayloadResponse::V2(json_payload, block_value) => {
+                GetPayloadResponse::Capella(GetPayloadResponseCapella {
+                    execution_payload: json_payload.into(),
+                    block_value,
+                })
+                .into()
+            }
+        }
     }
 }
 

@@ -1,11 +1,46 @@
+use crate::engine_api::ethspec::EthSpec;
+use crate::engine_api::{
+    Error, ForkchoiceState, ForkchoiceUpdatedResponse, GetPayloadResponse,
+    GetPayloadResponseCapella, GetPayloadResponseMerge, PayloadAttributes, PayloadAttributesV1,
+    PayloadAttributesV2, PayloadId, PayloadStatusV1, PayloadStatusV1Status,
+};
+use crate::serde_utils as eth2_serde_utils;
 use serde::{Deserialize, Serialize};
 use strum::EnumString;
 use superstruct::superstruct;
-use types::{
-    Blob, EthSpec, ExecutionBlockHash, FixedVector, KzgCommitment, Transaction, Unsigned,
-    VariableList, Withdrawal,
+
+use crate::engine_api::execution_payload::{
     ExecutionPayload, ExecutionPayloadCapella, ExecutionPayloadEip4844, ExecutionPayloadMerge,
+    Hash256, Transaction,
 };
+use crate::engine_api::withdrawal::Withdrawal;
+
+use ethereum_types::Address;
+use ssz_types::{FixedVector, VariableList};
+
+use ethereum_types::U256 as Uint256;
+
+#[derive(Default, Clone, Copy, Serialize, Deserialize, Eq, PartialEq, Hash, Debug)]
+#[serde(transparent)]
+pub struct ExecutionBlockHash(Hash256);
+
+impl ExecutionBlockHash {
+    pub fn zero() -> Self {
+        Self(Hash256::zero())
+    }
+
+    pub fn repeat_byte(b: u8) -> Self {
+        Self(Hash256::repeat_byte(b))
+    }
+
+    pub fn from_root(root: Hash256) -> Self {
+        Self(root)
+    }
+
+    pub fn into_root(self) -> Hash256 {
+        self.0
+    }
+}
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -60,6 +95,12 @@ pub struct JsonPayloadIdResponse {
     pub payload_id: PayloadId,
 }
 
+#[derive(Debug, PartialEq, Clone)]
+pub enum SynchError {
+    /// Logical error between the execution and consensus engine
+    IncorrectStateVariant,
+}
+
 #[superstruct(
     variants(V1, V2, V3),
     variant_attributes(
@@ -67,7 +108,7 @@ pub struct JsonPayloadIdResponse {
         serde(bound = "T: EthSpec", rename_all = "camelCase"),
     ),
     cast_error(ty = "Error", expr = "Error::IncorrectStateVariant"),
-    partial_getter_error(ty = "Error", expr = "Error::IncorrectStateVariant")
+    partial_getter_error(ty = "SynchError", expr = "SynchError::IncorrectStateVariant")
 )]
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 #[serde(bound = "T: EthSpec", rename_all = "camelCase", untagged)]
@@ -271,7 +312,7 @@ impl<T: EthSpec> From<JsonExecutionPayload<T>> for ExecutionPayload<T> {
 }
 
 #[superstruct(
-    variants(V1, V2, V3),
+    variants(V1, V2),
     variant_attributes(
         derive(Debug, PartialEq, Serialize, Deserialize),
         serde(bound = "T: EthSpec", rename_all = "camelCase")
@@ -286,8 +327,6 @@ pub struct JsonGetPayloadResponse<T: EthSpec> {
     pub execution_payload: JsonExecutionPayloadV1<T>,
     #[superstruct(only(V2), partial_getter(rename = "execution_payload_v2"))]
     pub execution_payload: JsonExecutionPayloadV2<T>,
-    #[superstruct(only(V3), partial_getter(rename = "execution_payload_v3"))]
-    pub execution_payload: JsonExecutionPayloadV3<T>,
     #[serde(with = "eth2_serde_utils::u256_hex_be")]
     pub block_value: Uint256,
 }
@@ -303,12 +342,6 @@ impl<T: EthSpec> From<JsonGetPayloadResponse<T>> for GetPayloadResponse<T> {
             }
             JsonGetPayloadResponse::V2(response) => {
                 GetPayloadResponse::Capella(GetPayloadResponseCapella {
-                    execution_payload: response.execution_payload.into(),
-                    block_value: response.block_value,
-                })
-            }
-            JsonGetPayloadResponse::V3(response) => {
-                GetPayloadResponse::Eip4844(GetPayloadResponseEip4844 {
                     execution_payload: response.execution_payload.into(),
                     block_value: response.block_value,
                 })
@@ -405,14 +438,6 @@ impl From<JsonPayloadAttributes> for PayloadAttributes {
             }),
         }
     }
-}
-
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
-#[serde(bound = "T: EthSpec", rename_all = "camelCase")]
-pub struct JsonBlobBundles<T: EthSpec> {
-    pub block_hash: ExecutionBlockHash,
-    pub kzgs: Vec<KzgCommitment>,
-    pub blobs: Vec<Blob<T>>,
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
@@ -582,8 +607,9 @@ pub struct TransitionConfigurationV1 {
 /// Serializes the `logs_bloom` field of an `ExecutionPayload`.
 pub mod serde_logs_bloom {
     use super::*;
-    use eth2_serde_utils::hex::PrefixedHexVisitor;
+    use crate::serde_utils::hex::PrefixedHexVisitor;
     use serde::{Deserializer, Serializer};
+    use typenum::Unsigned;
 
     pub fn serialize<S, U>(bytes: &FixedVector<u8, U>, serializer: S) -> Result<S::Ok, S::Error>
     where
