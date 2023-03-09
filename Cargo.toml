@@ -6,8 +6,11 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-types = { path = "./types"}
-sensitive_url = { path = "./sensitive_url" }
+sensitive_url = { path = "./common/sensitive_url" }
+types = { path = "./consensus/types"}
+task_executor = { path = "./common/task_executor" }
+lighthouse_metrics = { path = "./common/lighthouse_metrics" }
+
 
 tokio = { version = "1.10.0", features = ["full"] }
 async-trait = "0.1.51"
@@ -54,13 +57,10 @@ hash-db = "0.15.2"
 
 
 # fork_choice = { path = "../../consensus/fork_choice" }
-# lighthouse_metrics = { path = "../../common/lighthouse_metrics" }
 # slot_clock = { path = "../../common/slot_clock" }
 # tree_hash_derive = { path = "../../consensus/tree_hash_derive"}
 # eth2 = { path = "../../common/eth2" }
 # state_processing = { path = "../../consensus/state_processing" }
 # environment = { path = "../../lighthouse/environment" }
-# task_executor = { path = "../../common/task_executor" }
 # sensitive_url = { path = "../../common/sensitive_url" }
-# types = { path = "../../consensus/types"}
-# builder_client = { path = "../builder_client" }
+# builder_client = { path = "./builder_client" }

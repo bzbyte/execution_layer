@@ -4,7 +4,7 @@ use crate::engine_api::{
     EngineCapabilities, Error as EngineApiError, ForkchoiceUpdatedResponse, PayloadAttributes,
     PayloadId,
 };
-use crate::HttpJsonRpc;
+use crate::engine_api::http::HttpJsonRpc;
 use lru::LruCache;
 use slog::{debug, error, info, warn, Logger};
 use std::future::Future;

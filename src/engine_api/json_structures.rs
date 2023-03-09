@@ -4,8 +4,11 @@ use superstruct::superstruct;
 use types::{
     Blob, EthSpec, ExecutionBlockHash, FixedVector, KzgCommitment, Transaction, Unsigned,
     VariableList, Withdrawal,
-    ExecutionPayload, ExecutionPayloadCapella, ExecutionPayloadEip4844, ExecutionPayloadMerge,
+    ExecutionPayload, ExecutionPayloadCapella, ExecutionPayloadEip4844, ExecutionPayloadMerge
 };
+
+use types::beacon_state::Error;
+use crate::engine_api::*;
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]

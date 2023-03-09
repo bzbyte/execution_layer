@@ -1,8 +1,8 @@
 //! Contains an implementation of `EngineAPI` using the JSON-RPC API via HTTP.
 
 use super::*;
-use crate::auth::Auth;
-use crate::json_structures::*;
+use crate::engine_api::auth::Auth;
+use crate::engine_api::json_structures::*;
 use reqwest::header::CONTENT_TYPE;
 use sensitive_url::SensitiveUrl;
 use serde::de::DeserializeOwned;
@@ -13,7 +13,6 @@ use tokio::sync::Mutex;
 use std::time::{Duration, Instant};
 use types::EthSpec;
 
-pub use deposit_log::{DepositLog, Log};
 pub use reqwest::Client;
 
 const STATIC_ID: u32 = 1;
@@ -84,8 +83,7 @@ pub static PRE_CAPELLA_ENGINE_CAPABILITIES: EngineCapabilities = EngineCapabilit
 /// Contains subset of the HTTP JSON-RPC methods used to query an execution node for
 /// state of the deposit contract.
 pub mod deposit_methods {
-    use super::Log;
-    use crate::HttpJsonRpc;
+    use crate::engine_api::http::HttpJsonRpc;
     use serde::{Deserialize, Serialize};
     use serde_json::{json, Value};
     use std::fmt;
@@ -387,6 +385,7 @@ pub mod deposit_methods {
             response.map(|s| hex_to_bytes(&s)).transpose()
         }
 
+	/* 
         /// Returns logs for the `DEPOSIT_EVENT_TOPIC`, for the given `address` in the given
         /// `block_height_range`.
         ///
@@ -433,7 +432,7 @@ pub mod deposit_methods {
                 })
                 .collect::<Result<Vec<Log>, String>>()
                 .map_err(|e| format!("Failed to get logs in range: {}", e))
-        }
+        }*/
     }
 }
 

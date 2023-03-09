@@ -18,7 +18,6 @@ pub use types::{
     ExecutionPayloadRef, FixedVector, ForkName, Hash256, Uint256, VariableList, Withdrawal,
 };
 use types::{ExecutionPayloadCapella, ExecutionPayloadEip4844, ExecutionPayloadMerge};
-
 pub mod auth;
 pub mod http;
 pub mod json_structures;
@@ -48,7 +47,7 @@ pub enum Error {
     DeserializeTransaction(ssz_types::Error),
     DeserializeTransactions(ssz_types::Error),
     DeserializeWithdrawals(ssz_types::Error),
-    BuilderApi(builder_client::Error),
+    //BuilderApi(builder_client::Error),
     IncorrectStateVariant,
     RequiredMethodUnsupported(&'static str),
     UnsupportedForkVariant(String),
@@ -81,11 +80,13 @@ impl From<auth::Error> for Error {
     }
 }
 
+/*
 impl From<builder_client::Error> for Error {
     fn from(e: builder_client::Error) -> Self {
         Error::BuilderApi(e)
     }
 }
+*/
 
 impl From<rlp::DecoderError> for Error {
     fn from(e: rlp::DecoderError) -> Self {

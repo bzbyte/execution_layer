@@ -3,7 +3,7 @@
 pub mod engine_api;
 mod engines;
 //mod json_structures;
-use crate::auth::{Auth, JwtKey};
+use crate::engine_api::auth::{Auth, JwtKey};
 //use crate::http::HttpJsonRpc;
 use sensitive_url::SensitiveUrl;
 
