@@ -3,19 +3,18 @@
 pub mod engine_api;
 mod engines;
 //mod json_structures;
-use crate::engine_api::auth::{Auth, JwtKey};
-//use crate::http::HttpJsonRpc;
+use crate::{engine_api::{auth::{Auth, JwtKey}, BlockByNumberQuery, LATEST_TAG, PayloadAttributes, PayloadAttributesV1}, engines::ForkchoiceState};
+use engine_api::http::HttpJsonRpc;
 use sensitive_url::SensitiveUrl;
+use types::{ExecutionBlockHash, Hash256, Address, MainnetEthSpec};
 
 pub const JWT_SECRET: [u8; 32] = [0u8; 32];
 fn main_driver() {
     let rpc_url = SensitiveUrl::parse("http://localhost:8551").unwrap();
     let rpc_auth = Auth::new(JwtKey::from_slice(&JWT_SECRET).unwrap(), None, None);
     //let rpc_client = HttpJsonRpc::new_with_auth(rpc_url, rpc_auth, None).unwrap();
-    //let rpc_client = HttpJsonRpc::new(rpc_url, None).unwrap();
-
-    /*
-        let runtime = tokio::runtime::Runtime::new().unwrap();
+    let rpc_client = HttpJsonRpc::new(rpc_url, None).unwrap();
+    let runtime = tokio::runtime::Runtime::new().unwrap();
         runtime.block_on(async {
             loop {
                 rpc_client.upcheck().await.unwrap();
@@ -62,7 +61,6 @@ fn main_driver() {
                 let fchoice_result = rpc_client.forkchoice_updated_v1(f, attr).await.unwrap();
             }
     });
-        */
 }
 
 #[cfg(test)]
@@ -71,7 +69,6 @@ mod tests {
 
     #[test]
     fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+	main_driver();
     }
 }
