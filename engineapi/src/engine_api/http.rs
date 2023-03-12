@@ -87,7 +87,6 @@ pub mod deposit_methods {
     use serde::{Deserialize, Serialize};
     use serde_json::{json, Value};
     use std::fmt;
-    use std::ops::Range;
     use std::str::FromStr;
     use std::time::Duration;
     use types::Hash256;
@@ -385,7 +384,7 @@ pub mod deposit_methods {
             response.map(|s| hex_to_bytes(&s)).transpose()
         }
 
-	/* 
+        /*
         /// Returns logs for the `DEPOSIT_EVENT_TOPIC`, for the given `address` in the given
         /// `block_height_range`.
         ///

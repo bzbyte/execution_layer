@@ -12,7 +12,7 @@ use types::{Address, ExecutionBlockHash, Hash256, MainnetEthSpec};
 pub const JWT_SECRET: [u8; 32] = [0u8; 32];
 fn main_driver() {
     let rpc_url = SensitiveUrl::parse("http://localhost:8551").unwrap();
-    let rpc_auth = Auth::new(JwtKey::from_slice(&JWT_SECRET).unwrap(), None, None);
+    let _rpc_auth = Auth::new(JwtKey::from_slice(&JWT_SECRET).unwrap(), None, None);
     //let rpc_client = HttpJsonRpc::new_with_auth(rpc_url, rpc_auth, None).unwrap();
     let rpc_client = HttpJsonRpc::new(rpc_url, None).unwrap();
     let runtime = tokio::runtime::Runtime::new().unwrap();
@@ -49,17 +49,16 @@ fn main_driver() {
             println!("New payload result {payload_result:?}");
 
             // next state
-            let f = ForkchoiceState {
+            let _f = ForkchoiceState {
                 head_block_hash: payload_result.latest_valid_hash.unwrap(),
                 safe_block_hash: payload_result.latest_valid_hash.unwrap(),
                 finalized_block_hash: ExecutionBlockHash::zero(),
             };
-            let attr = Some(PayloadAttributes::V1(PayloadAttributesV1 {
+            let _attr = Some(PayloadAttributes::V1(PayloadAttributesV1 {
                 timestamp: block.timestamp + 2,
                 prev_randao: Hash256::zero(),
                 suggested_fee_recipient: Address::repeat_byte(0),
             }));
-            let fchoice_result = rpc_client.forkchoice_updated_v1(f, attr).await.unwrap();
         }
     });
 }

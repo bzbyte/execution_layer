@@ -36,7 +36,6 @@ tree_hash_derive = "0.4.0"
 rand_xorshift = "0.3.0"
 cached_tree_hash = { path = "../cached_tree_hash" }
 serde_yaml = "0.8.13"
-tempfile = "3.1.0"
 derivative = "2.1.1"
 rusqlite = { version = "0.28.0", features = ["bundled"], optional = true }
 # The arbitrary dependency is enabled by default since Capella to avoid complexity introduced by
@@ -56,7 +55,6 @@ maplit = "1.0.2"
 
 [dev-dependencies]
 criterion = "0.3.3"
-tokio = "1.14.0"
 
 [features]
 default = ["sqlite", "legacy-arith"]

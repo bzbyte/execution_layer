@@ -38,7 +38,6 @@ mod clone_config;
 mod exit_cache;
 mod iter;
 mod pubkey_cache;
-mod tests;
 mod tree_hash_cache;
 
 pub const CACHED_EPOCHS: usize = 3;

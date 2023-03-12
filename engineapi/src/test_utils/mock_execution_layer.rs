@@ -1,5 +1,3 @@
-use std::result;
-
 use crate::{
     test_utils::{
         MockServer, DEFAULT_BUILDER_THRESHOLD_WEI, DEFAULT_JWT_SECRET, DEFAULT_TERMINAL_BLOCK,
@@ -188,7 +186,7 @@ impl<T: EthSpec> MockExecutionLayer<T> {
             .await;
         assert!(res.is_err());
 
-        let status = self.el.notify_new_payload(&payload).await.unwrap();
+        let _status = self.el.notify_new_payload(&payload).await.unwrap();
 
         // Use junk values for slot/head-root to ensure there is no payload supplied.
         let slot = Slot::new(0);

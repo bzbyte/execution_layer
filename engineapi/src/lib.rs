@@ -24,7 +24,7 @@ use std::future::Future;
 use std::io::Write;
 use std::path::PathBuf;
 use std::sync::Arc;
-use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use strum::AsRefStr;
 use task_executor::TaskExecutor;
 use tokio::{
@@ -32,21 +32,17 @@ use tokio::{
     time::sleep,
 };
 use tokio_stream::wrappers::WatchStream;
-use tree_hash::TreeHash;
-use types::{
-    AbstractExecPayload, BeaconStateError, Blob, Checkpoint, ExecPayload, KzgCommitment,
-    Withdrawals,
-};
+
+use types::{AbstractExecPayload, BeaconStateError, Blob, Checkpoint, KzgCommitment};
 use types::{
     BlindedPayload, BlockType, ChainSpec, Epoch, ExecutionBlockHash, ExecutionPayload,
     ExecutionPayloadCapella, ExecutionPayloadEip4844, ExecutionPayloadMerge, ForkName,
-    ForkVersionedResponse, ProposerPreparationData, PublicKeyBytes, Signature, SignedBeaconBlock,
-    Slot, Uint256,
+    ProposerPreparationData, PublicKeyBytes, Signature, Slot, Uint256,
 };
 
 mod block_hash;
 pub mod engine_api;
-mod engines;
+pub mod engines;
 mod keccak;
 mod metrics;
 pub mod payload_cache;
@@ -96,7 +92,7 @@ enum ProvenancedPayload<P> {
     /// A good ol' fashioned farm-to-table payload from your local EE.
     Local(P),
     /// A payload from a builder (e.g. mev-boost).
-    Builder(P),
+    _Builder(P),
 }
 
 #[derive(Debug)]
@@ -282,7 +278,7 @@ struct Inner<E: EthSpec> {
     proposers: RwLock<HashMap<ProposerKey, Proposer>>,
     executor: TaskExecutor,
     payload_cache: PayloadCache<E>,
-    builder_profit_threshold: Uint256,
+    _builder_profit_threshold: Uint256,
     log: Logger,
 }
 
@@ -320,7 +316,7 @@ impl<T: EthSpec> ExecutionLayer<T> {
     pub fn from_config(config: Config, executor: TaskExecutor, log: Logger) -> Result<Self, Error> {
         let Config {
             execution_endpoints: urls,
-            builder_url,
+            builder_url: _,
             secret_files,
             suggested_fee_recipient,
             jwt_id,
@@ -386,7 +382,7 @@ impl<T: EthSpec> ExecutionLayer<T> {
             execution_blocks: Mutex::new(LruCache::new(EXECUTION_BLOCKS_LRU_CACHE_SIZE)),
             executor,
             payload_cache: PayloadCache::default(),
-            builder_profit_threshold: Uint256::from(builder_profit_threshold),
+            _builder_profit_threshold: Uint256::from(builder_profit_threshold),
             log,
         };
 
@@ -396,6 +392,7 @@ impl<T: EthSpec> ExecutionLayer<T> {
     }
 }
 
+#[allow(dead_code)]
 impl<T: EthSpec> ExecutionLayer<T> {
     fn engine(&self) -> &Arc<Engine> {
         &self.inner.engine
@@ -621,9 +618,9 @@ impl<T: EthSpec> ExecutionLayer<T> {
         parent_hash: ExecutionBlockHash,
         payload_attributes: &PayloadAttributes,
         forkchoice_update_params: ForkchoiceUpdateParameters,
-        builder_params: BuilderParams,
+        _builder_params: BuilderParams,
         current_fork: ForkName,
-        spec: &ChainSpec,
+        _spec: &ChainSpec,
     ) -> Result<BlockProposalContents<T, Payload>, Error> {
         let payload_result = match Payload::block_type() {
             BlockType::Blinded => Err(Error::CannotProduceHeader),
@@ -656,7 +653,7 @@ impl<T: EthSpec> ExecutionLayer<T> {
                 );
                 Ok(block_proposal_contents)
             }
-            Ok(ProvenancedPayload::Builder(block_proposal_contents)) => {
+            Ok(ProvenancedPayload::_Builder(block_proposal_contents)) => {
                 metrics::inc_counter_vec(
                     &metrics::EXECUTION_LAYER_GET_PAYLOAD_OUTCOME,
                     &[metrics::SUCCESS],
@@ -1446,6 +1443,7 @@ impl<T: EthSpec> ExecutionLayer<T> {
     }
 }
 
+#[allow(unused)]
 #[derive(AsRefStr)]
 #[strum(serialize_all = "snake_case")]
 enum InvalidBuilderPayload {
@@ -1483,6 +1481,7 @@ enum InvalidBuilderPayload {
     },
 }
 
+#[allow(unused)]
 impl InvalidBuilderPayload {
     /// Returns `true` if a payload is objectively invalid and should never be included on chain.
     fn payload_invalid(&self) -> bool {
@@ -1546,15 +1545,6 @@ impl fmt::Display for InvalidBuilderPayload {
             }
         }
     }
-}
-
-/// A helper function to record the time it takes to execute a future.
-async fn timed_future<F: Future<Output = T>, T>(metric: &str, future: F) -> (T, Duration) {
-    let start = Instant::now();
-    let result = future.await;
-    let duration = start.elapsed();
-    metrics::observe_timer_vec(&metrics::EXECUTION_LAYER_REQUEST_TIMES, &[metric], duration);
-    (result, duration)
 }
 
 #[cfg(test)]

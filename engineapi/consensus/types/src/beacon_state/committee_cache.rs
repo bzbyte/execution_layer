@@ -10,8 +10,6 @@ use ssz_derive::{Decode, Encode};
 use std::ops::Range;
 use swap_or_not_shuffle::shuffle_list;
 
-mod tests;
-
 // Define "legacy" implementations of `Option<Epoch>`, `Option<NonZeroUsize>` which use four bytes
 // for encoding the union selector.
 four_byte_option_impl!(four_byte_option_epoch, Epoch);

@@ -1,6 +1,4 @@
-use crate::test_utils::{DEFAULT_BUILDER_PAYLOAD_VALUE_WEI, DEFAULT_JWT_SECRET};
-use crate::{Config, ExecutionLayer, PayloadAttributes};
-use async_trait::async_trait;
+use crate::ExecutionLayer;
 pub use ethereum_consensus::state_transition::Context;
 use ethereum_consensus::{
     crypto::{SecretKey, Signature},
@@ -8,28 +6,20 @@ use ethereum_consensus::{
     state_transition::Error,
 };
 use mev_rs::{
-    bellatrix::{BuilderBid as BuilderBidBellatrix, SignedBuilderBid as SignedBuilderBidBellatrix},
-    capella::{BuilderBid as BuilderBidCapella, SignedBuilderBid as SignedBuilderBidCapella},
-    sign_builder_message, verify_signed_builder_message, BidRequest, BlindedBlockProviderError,
-    BlindedBlockProviderServer, BuilderBid, ExecutionPayload as ServerPayload,
-    SignedBlindedBeaconBlock, SignedBuilderBid, SignedValidatorRegistration,
+    bellatrix::SignedBuilderBid as SignedBuilderBidBellatrix,
+    capella::SignedBuilderBid as SignedBuilderBidCapella, sign_builder_message,
+    BlindedBlockProviderError, BuilderBid, SignedBuilderBid, SignedValidatorRegistration,
 };
 use parking_lot::RwLock;
-use sensitive_url::SensitiveUrl;
+
 use ssz::{Decode, Encode};
-use ssz_rs::{Merkleized, SimpleSerialize};
+use ssz_rs::SimpleSerialize;
 use std::collections::HashMap;
 use std::fmt::Debug;
-use std::net::Ipv4Addr;
+
 use std::sync::Arc;
-use std::time::Duration;
-use task_executor::TaskExecutor;
-use tempfile::NamedTempFile;
-use tree_hash::TreeHash;
-use types::{
-    Address, BeaconState, BlindedPayload, ChainSpec, EthSpec, ExecPayload, ForkName, Hash256, Slot,
-    Uint256,
-};
+
+use types::{Address, ChainSpec, EthSpec, Hash256, Uint256};
 
 #[derive(Clone)]
 pub enum Operation {
@@ -43,6 +33,7 @@ pub enum Operation {
     WithdrawalsRoot(Hash256),
 }
 
+#[allow(dead_code)]
 impl Operation {
     fn apply<B: BidStuff>(self, bid: &mut B) -> Result<(), BlindedBlockProviderError> {
         match self {
@@ -167,6 +158,7 @@ pub struct TestingBuilder<E: EthSpec> {
     pub builder: MockBuilder<E>,
 }
 
+#[allow(unused)]
 #[derive(Clone)]
 pub struct MockBuilder<E: EthSpec> {
     el: ExecutionLayer<E>,
@@ -207,7 +199,7 @@ impl<E: EthSpec> MockBuilder<E> {
         *self.invalidate_signatures.write() = false;
     }
 
-    fn apply_operations<B: BidStuff>(&self, bid: &mut B) -> Result<(), BlindedBlockProviderError> {
+    fn _apply_operations<B: BidStuff>(&self, bid: &mut B) -> Result<(), BlindedBlockProviderError> {
         let mut guard = self.operations.write();
         while let Some(op) = guard.pop() {
             op.apply(bid)?;
@@ -216,6 +208,7 @@ impl<E: EthSpec> MockBuilder<E> {
     }
 }
 
+#[allow(unused)]
 pub fn from_ssz_rs<T: SimpleSerialize, U: Decode>(
     ssz_rs_data: &T,
 ) -> Result<U, BlindedBlockProviderError> {
