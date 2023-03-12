@@ -10,7 +10,8 @@ use sensitive_url::SensitiveUrl;
 use types::{Address, ExecutionBlockHash, Hash256, MainnetEthSpec};
 
 pub const JWT_SECRET: [u8; 32] = [0u8; 32];
-fn main_driver() {
+
+fn driver() {
     let rpc_url = SensitiveUrl::parse("http://localhost:8551").unwrap();
     let _rpc_auth = Auth::new(JwtKey::from_slice(&JWT_SECRET).unwrap(), None, None);
     //let rpc_client = HttpJsonRpc::new_with_auth(rpc_url, rpc_auth, None).unwrap();
@@ -49,16 +50,20 @@ fn main_driver() {
             println!("New payload result {payload_result:?}");
 
             // next state
-            let _f = ForkchoiceState {
+            let next_fork_choice = ForkchoiceState {
                 head_block_hash: payload_result.latest_valid_hash.unwrap(),
                 safe_block_hash: payload_result.latest_valid_hash.unwrap(),
                 finalized_block_hash: ExecutionBlockHash::zero(),
             };
-            let _attr = Some(PayloadAttributes::V1(PayloadAttributesV1 {
+            let attr = Some(PayloadAttributes::V1(PayloadAttributesV1 {
                 timestamp: block.timestamp + 2,
                 prev_randao: Hash256::zero(),
                 suggested_fee_recipient: Address::repeat_byte(0),
             }));
+            let _fchoice_result = rpc_client
+                .forkchoice_updated_v1(next_fork_choice, attr)
+                .await
+                .unwrap();
         }
     });
 }
@@ -68,7 +73,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn it_works() {
-        main_driver();
+    fn execution_layer_driver() {
+        driver();
     }
 }
