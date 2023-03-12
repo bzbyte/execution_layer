@@ -10,12 +10,13 @@ sensitive_url = { path = "./common/sensitive_url" }
 types = { path = "./consensus/types"}
 task_executor = { path = "./common/task_executor" }
 lighthouse_metrics = { path = "./common/lighthouse_metrics" }
-
+tree_hash_derive = { path = "./consensus/tree_hash_derive"}
 
 tokio = { version = "1.10.0", features = ["full"] }
 async-trait = "0.1.51"
 slog = "2.5.2"
 futures = "0.3.7"
+sloggers = { version = "2.1.1", features = ["json"] }
 
 reqwest = { version = "0.11.0", features = ["json","stream"] }
 eth2_serde_utils = "0.1.1"
@@ -58,7 +59,6 @@ hash-db = "0.15.2"
 
 # fork_choice = { path = "../../consensus/fork_choice" }
 # slot_clock = { path = "../../common/slot_clock" }
-# tree_hash_derive = { path = "../../consensus/tree_hash_derive"}
 # eth2 = { path = "../../common/eth2" }
 # state_processing = { path = "../../consensus/state_processing" }
 # environment = { path = "../../lighthouse/environment" }
