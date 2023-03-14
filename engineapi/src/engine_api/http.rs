@@ -729,26 +729,6 @@ impl HttpJsonRpc {
         }
     }
 
-    pub async fn get_json_payload_v1<T: EthSpec>(
-        &self,
-        payload_id: PayloadId,
-    ) -> Result<GetJsonPayloadResponse<T>, Error> {
-        let params = json!([JsonPayloadIdRequest::from(payload_id)]);
-
-        let payload_v1: JsonExecutionPayloadV1<T> = self
-            .rpc_request(
-                ENGINE_GET_PAYLOAD_V1,
-                params,
-                ENGINE_GET_PAYLOAD_TIMEOUT * self.execution_timeout_multiplier,
-            )
-            .await?;
-
-        // Set the V1 payload values from the EE to be zero. This simulates
-        // the pre-block-value functionality of always choosing the builder
-        // block.
-        Ok(GetJsonPayloadResponse::V1(payload_v1, Uint256::zero()))
-    }
-
     pub async fn get_blobs_bundle_v1<T: EthSpec>(
         &self,
         payload_id: PayloadId,
