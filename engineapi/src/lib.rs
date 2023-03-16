@@ -8,6 +8,7 @@ use crate::payload_cache::PayloadCache;
 use auth::{strip_prefix, Auth, JwtKey};
 pub use engine_api::EngineCapabilities;
 use engine_api::Error as ApiError;
+pub use types;
 pub use engine_api::*;
 pub use engine_api::{http, http::deposit_methods, http::HttpJsonRpc};
 use engines::{Engine, EngineError};
