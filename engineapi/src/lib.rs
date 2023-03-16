@@ -15,7 +15,7 @@ pub use engines::{EngineState, ForkchoiceState};
 use lru::LruCache;
 use payload_status::process_payload_status;
 pub use payload_status::PayloadStatus;
-use sensitive_url::SensitiveUrl;
+pub use sensitive_url::SensitiveUrl;
 use serde::{Deserialize, Serialize};
 use slog::{crit, debug, error, info, trace, warn, Logger};
 use std::collections::HashMap;
