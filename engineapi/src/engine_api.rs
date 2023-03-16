@@ -3,7 +3,7 @@ use crate::engine_api::http::{
     ENGINE_FORKCHOICE_UPDATED_V2, ENGINE_GET_PAYLOAD_V1, ENGINE_GET_PAYLOAD_V2,
     ENGINE_NEW_PAYLOAD_V1, ENGINE_NEW_PAYLOAD_V2,
 };
-use crate::engines::ForkchoiceState;
+pub use crate::engines::ForkchoiceState;
 use crate::json_structures::{
     JsonExecutionPayloadV1, JsonExecutionPayloadV2, JsonExecutionPayloadV3,
 };
