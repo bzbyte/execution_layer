@@ -4,6 +4,9 @@ use crate::engine_api::http::{
     ENGINE_NEW_PAYLOAD_V1, ENGINE_NEW_PAYLOAD_V2,
 };
 use crate::engines::ForkchoiceState;
+use crate::json_structures::{
+    JsonExecutionPayloadV1, JsonExecutionPayloadV2, JsonExecutionPayloadV3,
+};
 pub use ethers_core::types::Transaction;
 use ethers_core::utils::rlp::{self, Decodable, Rlp};
 use http::deposit_methods::RpcError;
@@ -377,6 +380,43 @@ impl<T: EthSpec> From<GetPayloadResponse<T>> for (ExecutionPayload<T>, Uint256) 
 impl<T: EthSpec> GetPayloadResponse<T> {
     pub fn execution_payload_ref(&self) -> ExecutionPayloadRef<T> {
         self.to_ref().into()
+    }
+}
+
+/// Serializable version of GetPayloadResponse.
+/// Per-version payload + block number
+#[derive(Debug, Serialize, Deserialize)]
+pub enum GetJsonPayloadResponse<T: EthSpec> {
+    V1(JsonExecutionPayloadV1<T>, Uint256),
+    V2(JsonExecutionPayloadV2<T>, Uint256),
+    V3(JsonExecutionPayloadV3<T>, Uint256),
+}
+
+impl<T: EthSpec> From<GetJsonPayloadResponse<T>> for ExecutionPayload<T> {
+    fn from(json_payload: GetJsonPayloadResponse<T>) -> ExecutionPayload<T> {
+        match json_payload {
+            GetJsonPayloadResponse::V1(json_payload, block_value) => {
+                GetPayloadResponse::Merge(GetPayloadResponseMerge {
+                    execution_payload: json_payload.into(),
+                    block_value,
+                })
+                .into()
+            }
+            GetJsonPayloadResponse::V2(json_payload, block_value) => {
+                GetPayloadResponse::Capella(GetPayloadResponseCapella {
+                    execution_payload: json_payload.into(),
+                    block_value,
+                })
+                .into()
+            }
+            GetJsonPayloadResponse::V3(json_payload, block_value) => {
+                GetPayloadResponse::Eip4844(GetPayloadResponseEip4844 {
+                    execution_payload: json_payload.into(),
+                    block_value,
+                })
+                .into()
+            }
+        }
     }
 }
 

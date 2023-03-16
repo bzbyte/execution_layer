@@ -6,11 +6,11 @@ edition = "2021"
 
 [dependencies]
 ethereum-types = "0.14.1"
-eth2_ssz_types = "0.2.2"
-eth2_hashing = "0.3.0"
-eth2_ssz_derive = "0.3.1"
-eth2_ssz = "0.4.1"
-tree_hash = "0.4.1"
+eth2_ssz_types = { path = "../../consensus/ssz_types" }
+eth2_hashing = { path = "../../crypto/eth2_hashing" }
+eth2_ssz_derive = { path = "../../consensus/ssz_derive" }
+eth2_ssz = { path = "../../consensus/ssz" }
+tree_hash = { path = "../tree_hash" }
 smallvec = "1.6.1"
 
 [dev-dependencies]
