@@ -8,14 +8,14 @@ repository = "https://github.com/bzbyte/execution_layer"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-sensitive_url = { path = "./common/sensitive_url" }
-types = { path = "./consensus/types"}
-lighthouse_metrics = { path = "./common/lighthouse_metrics" }
-eth2_ssz = { path = "consensus/ssz" }
-eth2_ssz_types = { path = "consensus/ssz_types" } 
-tree_hash = { path = "consensus/tree_hash" }
-task_executor = { path = "./common/task_executor" }
-tree_hash_derive = { path = "./consensus/tree_hash_derive" }
+sensitive_url = { version="0.1.0", path = "./common/sensitive_url" }
+types = { version="0.2.1", path = "./consensus/types"}
+lighthouse_metrics = { version="0.2.0", path = "./common/lighthouse_metrics" }
+eth2_ssz = { version="0.4.1", path = "consensus/ssz" }
+eth2_ssz_types = { version="0.2.2", path = "consensus/ssz_types" } 
+tree_hash = { version="0.4.1", path = "consensus/tree_hash" }
+task_executor = { version="0.1.0", path = "./common/task_executor" }
+tree_hash_derive = { version="0.4.0", path = "./consensus/tree_hash_derive" }
 eth2_serde_utils = { version="0.1.1", path = "./consensus/serde_utils" } 
 
 slog = "2.5.2"
