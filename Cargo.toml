@@ -8,12 +8,10 @@ edition = "2021"
 [dependencies]
 sensitive_url = { path = "./common/sensitive_url" }
 types = { path = "./consensus/types"}
-task_executor = { path = "./common/task_executor" }
 lighthouse_metrics = { path = "./common/lighthouse_metrics" }
+task_executor = { path = "./common/task_executor" }
 tree_hash_derive = { path = "./consensus/tree_hash_derive" }
 
-tokio = { version = "1.10.0", features = ["full"] }
-async-trait = "0.1.51"
 slog = "2.5.2"
 futures = "0.3.7"
 sloggers = { version = "2.1.1", features = ["json"] }
@@ -45,9 +43,12 @@ lazy_static = "1.4.0"
 ethers-core = "1.0.2"
 
 
-tokio-stream = { version = "0.1.9", features = [ "sync" ] }
 strum = "0.24.0"
 keccak-hash = "0.10.0"
 hash256-std-hasher = "0.15.2"
 triehash = "0.8.4"
 hash-db = "0.15.2"
+
+tokio-stream = { version = "0.1.9", features = [ "sync" ] }
+tokio = { version = "1.10.0", features = ["full"] }
+[dev-dependencies]
