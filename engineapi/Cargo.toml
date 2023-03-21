@@ -45,22 +45,9 @@ lazy_static = "1.4.0"
 ethers-core = "1.0.2"
 
 
-mev-rs = { git = "https://github.com/ralexstokes/mev-rs" }
-ethereum-consensus = { git = "https://github.com/ralexstokes/ethereum-consensus" }
-ssz-rs = { git = "https://github.com/ralexstokes/ssz-rs" }
 tokio-stream = { version = "0.1.9", features = [ "sync" ] }
 strum = "0.24.0"
 keccak-hash = "0.10.0"
 hash256-std-hasher = "0.15.2"
 triehash = "0.8.4"
 hash-db = "0.15.2"
-
-
-
-# fork_choice = { path = "../../consensus/fork_choice" }
-# slot_clock = { path = "../../common/slot_clock" }
-# eth2 = { path = "../../common/eth2" }
-# state_processing = { path = "../../consensus/state_processing" }
-# environment = { path = "../../lighthouse/environment" }
-# sensitive_url = { path = "../../common/sensitive_url" }
-# builder_client = { path = "./builder_client" }

@@ -24,7 +24,6 @@ use warp::{http::StatusCode, Filter, Rejection};
 use crate::engine_api::EngineCapabilities;
 pub use execution_block_generator::{generate_pow_block, Block, ExecutionBlockGenerator};
 pub use hook::Hook;
-pub use mock_builder::{Context as MockBuilderContext, MockBuilder, Operation, TestingBuilder};
 pub use mock_execution_layer::MockExecutionLayer;
 use sloggers::{null::NullLoggerBuilder, Build};
 
@@ -47,7 +46,6 @@ pub const DEFAULT_ENGINE_CAPABILITIES: EngineCapabilities = EngineCapabilities {
 mod execution_block_generator;
 mod handle_rpc;
 mod hook;
-mod mock_builder;
 mod mock_execution_layer;
 
 pub fn null_logger() -> Logger {
