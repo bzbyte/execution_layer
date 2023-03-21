@@ -11,9 +11,10 @@ use types::{Address, ExecutionBlockHash, Hash256, MainnetEthSpec};
 
 pub const JWT_SECRET: [u8; 32] = [0u8; 32];
 
+#[allow(dead_code)]
 enum API {
-    original,
-    new
+    OPEN,
+    AUTH,
 }
 
 fn driver(api_type: API) {
@@ -47,20 +48,17 @@ fn driver(api_type: API) {
             let fchoice_result = rpc_client.forkchoice_updated_v1(f, attr).await.unwrap();
             println!("Fork choice {fchoice_result:?}");
 
-
             let payload = match api_type {
-                API::original =>
-                    rpc_client
+                API::OPEN => rpc_client
                     .get_payload_v1::<MainnetEthSpec>(fchoice_result.payload_id.unwrap())
                     .await
                     .unwrap()
                     .into(),
-                API::new =>
-                     rpc_client
+                API::AUTH => rpc_client
                     .get_json_payload_v1::<MainnetEthSpec>(fchoice_result.payload_id.unwrap())
                     .await
                     .unwrap()
-                    .into()
+                    .into(),
             };
 
             println!("New payload {payload:?}");
@@ -92,6 +90,6 @@ mod tests {
 
     #[test]
     fn execution_layer_driver() {
-        driver(API::new);
+        driver(API::AUTH);
     }
 }
