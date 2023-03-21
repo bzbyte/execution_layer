@@ -3,7 +3,7 @@ name = "bzb_execution_layer"
 description = "Rust communication shim to talk to a execution client"
 version = "0.0.1"
 edition = "2021"
-license = "Apache 2.0"
+license = "Apache-2.0"
 repository = "https://github.com/bzbyte/execution_layer"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
