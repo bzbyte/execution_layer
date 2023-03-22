@@ -9,6 +9,7 @@ use serde::de::DeserializeOwned;
 use serde_json::json;
 use std::collections::HashSet;
 use tokio::sync::Mutex;
+use std::fmt::{self, Display, Formatter};
 
 use std::time::{Duration, Instant};
 use types::EthSpec;
@@ -56,6 +57,28 @@ pub const EIP155_ERROR_STR: &str = "chain not synced beyond EIP-155 replay-prote
 /// This code is returned by all clients when a method is not supported
 /// (verified geth, nethermind, erigon, besu)
 pub const METHOD_NOT_FOUND_CODE: i64 = -32601;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum ForkName {
+    Base,
+    Altair,
+    Merge,
+    Capella,
+    Eip4844,
+}
+
+impl Display for ForkName {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), fmt::Error> {
+        match self {
+            ForkName::Base => "phase0".fmt(f),
+            ForkName::Altair => "altair".fmt(f),
+            ForkName::Merge => "bellatrix".fmt(f),
+            ForkName::Capella => "capella".fmt(f),
+            ForkName::Eip4844 => "eip4844".fmt(f),
+        }
+    }
+}
+
 
 pub static LIGHTHOUSE_CAPABILITIES: &[&str] = &[
     ENGINE_NEW_PAYLOAD_V1,
@@ -749,44 +772,6 @@ impl HttpJsonRpc {
         Ok(GetJsonPayloadResponse::V1(payload_v1, Uint256::zero()))
     }
 
-    pub async fn get_blobs_bundle_v1<T: EthSpec>(
-        &self,
-        payload_id: PayloadId,
-    ) -> Result<JsonBlobBundles<T>, Error> {
-        let params = json!([JsonPayloadIdRequest::from(payload_id)]);
-
-        let response: JsonBlobBundles<T> = self
-            .rpc_request(
-                ENGINE_GET_BLOBS_BUNDLE_V1,
-                params,
-                ENGINE_GET_BLOBS_BUNDLE_TIMEOUT,
-            )
-            .await?;
-
-        Ok(response)
-    }
-
-    pub async fn forkchoice_updated_v1(
-        &self,
-        forkchoice_state: ForkchoiceState,
-        payload_attributes: Option<PayloadAttributes>,
-    ) -> Result<ForkchoiceUpdatedResponse, Error> {
-        let params = json!([
-            JsonForkchoiceStateV1::from(forkchoice_state),
-            payload_attributes.map(JsonPayloadAttributes::from)
-        ]);
-
-        let response: JsonForkchoiceUpdatedV1Response = self
-            .rpc_request(
-                ENGINE_FORKCHOICE_UPDATED_V1,
-                params,
-                ENGINE_FORKCHOICE_UPDATED_TIMEOUT * self.execution_timeout_multiplier,
-            )
-            .await?;
-
-        Ok(response.into())
-    }
-
     pub async fn forkchoice_updated_v2(
         &self,
         forkchoice_state: ForkchoiceState,
@@ -916,25 +901,6 @@ impl HttpJsonRpc {
             self.get_payload_v1(payload_id).await
         } else {
             Err(Error::RequiredMethodUnsupported("engine_getPayload"))
-        }
-    }
-
-    // automatically selects the latest version of
-    // forkchoice_updated that the execution engine supports
-    pub async fn forkchoice_updated(
-        &self,
-        forkchoice_state: ForkchoiceState,
-        payload_attributes: Option<PayloadAttributes>,
-    ) -> Result<ForkchoiceUpdatedResponse, Error> {
-        let engine_capabilities = self.get_engine_capabilities(None).await?;
-        if engine_capabilities.forkchoice_updated_v2 {
-            self.forkchoice_updated_v2(forkchoice_state, payload_attributes)
-                .await
-        } else if engine_capabilities.forkchoice_updated_v1 {
-            self.forkchoice_updated_v1(forkchoice_state, payload_attributes)
-                .await
-        } else {
-            Err(Error::RequiredMethodUnsupported("engine_forkchoiceUpdated"))
         }
     }
 }
