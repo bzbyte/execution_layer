@@ -13,8 +13,6 @@ sensitive_url = { version="0.1.0", path = "./common/sensitive_url" }
 types = { version="0.2.1", path = "./consensus/types"}
 eth2_ssz = { version="0.4.1", path = "consensus/ssz" }
 eth2_ssz_types = { version="0.2.2", path = "consensus/ssz_types" } 
-tree_hash = { version="0.4.1", path = "consensus/tree_hash" }
-tree_hash_derive = { version="0.4.0", path = "./consensus/tree_hash_derive" }
 eth2_serde_utils = { version="0.1.1", path = "./consensus/serde_utils" } 
 
 slog = "2.5.2"
