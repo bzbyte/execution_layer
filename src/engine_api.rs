@@ -20,10 +20,10 @@ use std::convert::TryFrom;
 use strum::IntoStaticStr;
 use superstruct::superstruct;
 pub use types::{
-    Address, EthSpec, ExecutionBlockHash, ExecutionPayload, ExecutionPayloadHeader,
-    ExecutionPayloadRef, FixedVector, ForkName, Hash256, Uint256, VariableList, Withdrawal,
+    Address, EthSpec, ExecutionBlockHash, ExecutionPayload, ExecutionPayloadCapella,
+    ExecutionPayloadEip4844, ExecutionPayloadHeader, ExecutionPayloadMerge, ExecutionPayloadRef,
+    FixedVector, ForkName, Hash256, Uint256, VariableList, Withdrawal,
 };
-use types::{ExecutionPayloadCapella, ExecutionPayloadEip4844, ExecutionPayloadMerge};
 pub const LATEST_TAG: &str = "latest";
 
 #[derive(Copy, Clone, PartialEq, Debug)]
@@ -87,14 +87,6 @@ impl From<auth::Error> for Error {
         Error::Auth(e)
     }
 }
-
-/*
-impl From<builder_client::Error> for Error {
-    fn from(e: builder_client::Error) -> Self {
-        Error::BuilderApi(e)
-    }
-}
-*/
 
 impl From<rlp::DecoderError> for Error {
     fn from(e: rlp::DecoderError) -> Self {
