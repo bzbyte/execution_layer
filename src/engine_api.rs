@@ -1,12 +1,16 @@
+pub mod auth;
+pub mod http;
+pub mod json_structures;
+
 use crate::engine_api::http::{
     ENGINE_EXCHANGE_TRANSITION_CONFIGURATION_V1, ENGINE_FORKCHOICE_UPDATED_V1,
     ENGINE_FORKCHOICE_UPDATED_V2, ENGINE_GET_PAYLOAD_V1, ENGINE_GET_PAYLOAD_V2,
     ENGINE_NEW_PAYLOAD_V1, ENGINE_NEW_PAYLOAD_V2,
 };
-pub use crate::engines::ForkchoiceState;
-use crate::json_structures::{
+use crate::engine_api::json_structures::{
     JsonExecutionPayloadV1, JsonExecutionPayloadV2, JsonExecutionPayloadV3,
 };
+pub use crate::engines::ForkchoiceState;
 pub use ethers_core::types::Transaction;
 use ethers_core::utils::rlp::{self, Decodable, Rlp};
 use http::deposit_methods::RpcError;
@@ -21,10 +25,6 @@ pub use types::{
     ExecutionPayloadRef, FixedVector, ForkName, Hash256, Uint256, VariableList, Withdrawal,
 };
 use types::{ExecutionPayloadCapella, ExecutionPayloadEip4844, ExecutionPayloadMerge};
-pub mod auth;
-pub mod http;
-pub mod json_structures;
-
 pub const LATEST_TAG: &str = "latest";
 
 pub type PayloadId = [u8; 8];

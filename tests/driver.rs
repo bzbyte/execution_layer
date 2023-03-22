@@ -4,7 +4,7 @@ use execution_layer::engine_api::{
     BlockByNumberQuery, PayloadAttributes, PayloadAttributesV1, LATEST_TAG,
 };
 
-use execution_layer::ForkchoiceState;
+use execution_layer::engines::ForkchoiceState;
 
 use sensitive_url::SensitiveUrl;
 use types::{Address, ExecutionBlockHash, Hash256, MainnetEthSpec};
