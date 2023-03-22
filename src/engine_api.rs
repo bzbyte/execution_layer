@@ -10,7 +10,6 @@ use crate::engine_api::http::{
 use crate::engine_api::json_structures::{
     JsonExecutionPayloadV1, JsonExecutionPayloadV2, JsonExecutionPayloadV3,
 };
-pub use crate::engines::ForkchoiceState;
 pub use ethers_core::types::Transaction;
 use ethers_core::utils::rlp::{self, Decodable, Rlp};
 use http::deposit_methods::RpcError;
@@ -27,6 +26,12 @@ pub use types::{
 use types::{ExecutionPayloadCapella, ExecutionPayloadEip4844, ExecutionPayloadMerge};
 pub const LATEST_TAG: &str = "latest";
 
+#[derive(Copy, Clone, PartialEq, Debug)]
+pub struct ForkchoiceState {
+    pub head_block_hash: ExecutionBlockHash,
+    pub safe_block_hash: ExecutionBlockHash,
+    pub finalized_block_hash: ExecutionBlockHash,
+}
 pub type PayloadId = [u8; 8];
 
 #[derive(Debug)]
