@@ -1,5 +1,5 @@
 [package]
-name = "execution_layer"
+name = "bzb_execution_layer"
 description = "Rust communication shim to talk to a execution client"
 version = "0.0.1"
 edition = "2021"
@@ -24,7 +24,6 @@ tokio = { version = "1.10.0", features = ["full"] }
 ssz_types = "0.5.2"
 ethereum-types = "0.14.1"
 serde_derive = "1.0.158"
-arbitrary = { version = "1.3.0", features = ["derive"] }
 derivative = "2.2.0"
 typenum = "1.16.0"
 url = "2.3.1"
