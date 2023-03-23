@@ -4,12 +4,12 @@ use execution_layer::engine_api::{
     BlockByNumberQuery, PayloadAttributes, PayloadAttributesV1, LATEST_TAG,
 };
 
-use execution_layer::engine_api::ForkchoiceState;
-use sensitive_url::SensitiveUrl;
-use execution_layer::engine_api::json_structures::ExecutionBlockHash;
-use ethereum_types::{Address};
+use ethereum_types::Address;
 use execution_layer::engine_api::ethspec::MainnetEthSpec;
 use execution_layer::engine_api::execution_payload::Hash256;
+use execution_layer::engine_api::json_structures::ExecutionBlockHash;
+use execution_layer::engine_api::sensitive_url::SensitiveUrl;
+use execution_layer::engine_api::ForkchoiceState;
 
 pub const JWT_SECRET: [u8; 32] = [0u8; 32];
 

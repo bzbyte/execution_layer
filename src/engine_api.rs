@@ -3,6 +3,7 @@ pub mod ethspec;
 pub mod execution_payload;
 pub mod http;
 pub mod json_structures;
+pub mod sensitive_url;
 pub mod withdrawal;
 
 use crate::engine_api::http::{
@@ -10,9 +11,7 @@ use crate::engine_api::http::{
     ENGINE_FORKCHOICE_UPDATED_V2, ENGINE_GET_PAYLOAD_V1, ENGINE_GET_PAYLOAD_V2,
     ENGINE_NEW_PAYLOAD_V1, ENGINE_NEW_PAYLOAD_V2,
 };
-use crate::engine_api::json_structures::{
-    JsonExecutionPayloadV1, JsonExecutionPayloadV2,
-};
+use crate::engine_api::json_structures::{JsonExecutionPayloadV1, JsonExecutionPayloadV2};
 pub use ethers_core::types::Transaction;
 use ethers_core::utils::rlp::{self, Decodable, Rlp};
 use http::deposit_methods::RpcError;
@@ -28,13 +27,13 @@ use superstruct::superstruct;
 //     FixedVector, ForkName, Hash256, Uint256, VariableList, Withdrawal,
 // };
 
-use crate::engine_api::execution_payload::Hash256;
-use crate::engine_api::execution_payload::ExecutionPayload;
 use crate::engine_api::ethspec::EthSpec;
+use crate::engine_api::execution_payload::ExecutionPayload;
+use crate::engine_api::execution_payload::ExecutionPayloadCapella;
+use crate::engine_api::execution_payload::ExecutionPayloadMerge;
+use crate::engine_api::execution_payload::Hash256;
 use crate::engine_api::json_structures::ExecutionBlockHash;
 use crate::engine_api::withdrawal::Withdrawal;
-use crate::engine_api::execution_payload::ExecutionPayloadMerge;
-use crate::engine_api::execution_payload::ExecutionPayloadCapella;
 use ethereum_types::Address;
 use ethereum_types::U256 as Uint256;
 use ssz_types::{FixedVector, VariableList};
@@ -350,7 +349,6 @@ pub struct GetPayloadResponse<T: EthSpec> {
     pub block_value: Uint256,
 }
 
-
 impl<T: EthSpec> From<GetPayloadResponse<T>> for ExecutionPayload<T> {
     fn from(response: GetPayloadResponse<T>) -> Self {
         map_get_payload_response_into_execution_payload!(response, |inner, cons| {
@@ -373,7 +371,6 @@ impl<T: EthSpec> From<GetPayloadResponse<T>> for (ExecutionPayload<T>, Uint256) 
         }
     }
 }
-
 
 /// Serializable version of GetPayloadResponse.
 /// Per-version payload + block number

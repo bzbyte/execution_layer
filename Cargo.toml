@@ -9,7 +9,6 @@ repository = "https://github.com/bzbyte/execution_layer"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-sensitive_url = { version="0.1.0", path = "./common/sensitive_url" }
 eth2_serde_utils = { version="0.1.1", path = "./consensus/serde_utils" } 
 
 slog = "2.5.2"
@@ -33,5 +32,6 @@ serde_derive = "1.0.158"
 arbitrary = { version = "1.3.0", features = ["derive"] }
 derivative = "2.2.0"
 typenum = "1.16.0"
+url = "2.3.1"
 
 [dev-dependencies]
