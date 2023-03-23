@@ -13,30 +13,24 @@ use execution_layer::engine_api::ForkchoiceState;
 
 pub const JWT_SECRET: [u8; 32] = [0u8; 32];
 
-#[allow(dead_code)]
-enum API {
-    OPEN,
-    AUTH,
-}
-
-fn driver(api_type: API) {
+fn driver() {
     let rpc_url = SensitiveUrl::parse("http://localhost:8551").unwrap();
     let rpc_auth = Auth::new(JwtKey::from_slice(&JWT_SECRET).unwrap(), None, None);
     let rpc_client = HttpJsonRpc::new_with_auth(rpc_url, rpc_auth, None).unwrap();
     //let rpc_client = HttpJsonRpc::new(rpc_url, None).unwrap();
     let runtime = tokio::runtime::Runtime::new().unwrap();
     runtime.block_on(async {
+        let capabilities = rpc_client.exchange_capabilities().await.unwrap();
+        println!("Caps: {capabilities:?}");
+
         loop {
             rpc_client.upcheck().await.unwrap();
-            let capabilities = rpc_client.exchange_capabilities().await.unwrap();
-            println!("Caps: {capabilities:?}");
-
             let block = rpc_client
                 .get_block_by_number(BlockByNumberQuery::Tag(LATEST_TAG))
                 .await
                 .unwrap()
                 .unwrap();
-            println!("Latest Block: {block:?}");
+            //println!("Latest Block: {block:?}");
             let f = ForkchoiceState {
                 head_block_hash: block.block_hash,
                 safe_block_hash: block.block_hash,
@@ -48,22 +42,15 @@ fn driver(api_type: API) {
                 suggested_fee_recipient: Address::repeat_byte(0),
             }));
             let fchoice_result = rpc_client.forkchoice_updated_v2(f, attr).await.unwrap();
-            println!("Fork choice {fchoice_result:?}");
+            //println!("Fork choice {fchoice_result:?}");
 
-            let payload = match api_type {
-                API::OPEN => rpc_client
-                    .get_payload_v1::<MainnetEthSpec>(fchoice_result.payload_id.unwrap())
-                    .await
-                    .unwrap()
-                    .into(),
-                API::AUTH => rpc_client
-                    .get_json_payload_v1::<MainnetEthSpec>(fchoice_result.payload_id.unwrap())
-                    .await
-                    .unwrap()
-                    .into(),
-            };
+            let payload = rpc_client
+                .get_json_payload_v1::<MainnetEthSpec>(fchoice_result.payload_id.unwrap())
+                .await
+                .unwrap()
+                .into();
 
-            println!("New payload {payload:?}");
+            //println!("New payload {payload:?}");
             let payload_result = rpc_client.new_payload_v1(payload).await.unwrap();
             println!("New payload result {payload_result:?}");
 
@@ -92,6 +79,6 @@ mod tests {
 
     #[test]
     fn execution_layer_driver() {
-        driver(API::AUTH);
+        driver();
     }
 }
