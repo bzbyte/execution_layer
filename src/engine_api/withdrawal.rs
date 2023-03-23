@@ -1,5 +1,7 @@
 use serde_derive::{Deserialize, Serialize};
 use ethereum_types::Address;
+use crate::serde_utils as eth2_serde_utils;
+
 #[derive(
     Debug,
     PartialEq,

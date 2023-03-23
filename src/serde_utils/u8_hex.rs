@@ -2,7 +2,7 @@
 //!
 //! E.g., `0` serializes as `"0x00"`.
 
-use crate::hex::PrefixedHexVisitor;
+use crate::serde_utils::hex::PrefixedHexVisitor;
 use serde::de::Error;
 use serde::{Deserializer, Serializer};
 

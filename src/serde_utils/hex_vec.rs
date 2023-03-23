@@ -2,7 +2,7 @@
 //!
 //! E.g., `vec![0, 1, 2, 3]` serializes as `"0x00010203"`.
 
-use crate::hex::PrefixedHexVisitor;
+use crate::serde_utils::hex::PrefixedHexVisitor;
 use serde::{Deserializer, Serializer};
 
 pub fn serialize<S>(bytes: &[u8], serializer: S) -> Result<S::Ok, S::Error>

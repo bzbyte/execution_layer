@@ -5,7 +5,7 @@ use serde_derive::{Deserialize, Serialize};
 use ssz_types::{VariableList, FixedVector};
 pub use ethereum_types::H256 as Hash256;
 pub use ethereum_types::U256 as Uint256;
-
+use crate::serde_utils as eth2_serde_utils;
 use crate::engine_api::ethspec::EthSpec;
 use crate::engine_api::Error;
 use crate::engine_api::json_structures::ExecutionBlockHash;

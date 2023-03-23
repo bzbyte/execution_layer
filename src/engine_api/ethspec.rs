@@ -5,7 +5,7 @@ use ssz_types::typenum::{
 };
 use std::fmt::{self, Debug};
 use std::str::FromStr;
-
+use crate::serde_utils as eth2_serde_utils;
 pub type U5000 = UInt<UInt<UInt<U625, B0>, B0>, B0>; // 625 * 8 = 5000
 
 #[derive(

@@ -4,7 +4,7 @@
 //!
 //! Quotes can be optional during decoding.
 
-use crate::hex;
+use crate::serde_utils::hex;
 use serde::ser::SerializeSeq;
 use serde::{de, Deserializer, Serializer};
 

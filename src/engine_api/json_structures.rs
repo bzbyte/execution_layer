@@ -1,11 +1,7 @@
 use serde::{Deserialize, Serialize};
 use strum::EnumString;
 use superstruct::superstruct;
-// use types::{
-//     ExecutionPayload, ExecutionPayloadCapella, ExecutionPayloadEip4844, ExecutionPayloadMerge,
-//     KzgCommitment, Transaction, Unsigned, Withdrawal,
-// };
-
+use crate::serde_utils as eth2_serde_utils;
 use crate::engine_api::ethspec::EthSpec;
 use crate::engine_api::{ ForkchoiceState,
 ForkchoiceUpdatedResponse,
@@ -621,7 +617,7 @@ pub struct TransitionConfigurationV1 {
 /// Serializes the `logs_bloom` field of an `ExecutionPayload`.
 pub mod serde_logs_bloom {
     use super::*;
-    use eth2_serde_utils::hex::PrefixedHexVisitor;
+    use crate::serde_utils::hex::PrefixedHexVisitor;
     use serde::{Deserializer, Serializer};
     use typenum::Unsigned;
 
