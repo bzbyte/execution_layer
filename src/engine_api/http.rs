@@ -104,8 +104,8 @@ pub static PRE_CAPELLA_ENGINE_CAPABILITIES: EngineCapabilities = EngineCapabilit
 /// Contains subset of the HTTP JSON-RPC methods used to query an execution node for
 /// state of the deposit contract.
 pub mod deposit_methods {
-    use crate::engine_api::http::HttpJsonRpc;
     use crate::engine_api::execution_payload::Hash256;
+    use crate::engine_api::http::HttpJsonRpc;
     use serde::{Deserialize, Serialize};
     use serde_json::{json, Value};
     use std::fmt;

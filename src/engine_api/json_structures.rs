@@ -1,31 +1,22 @@
+use crate::engine_api::ethspec::EthSpec;
+use crate::engine_api::{
+    Error, ForkchoiceState, ForkchoiceUpdatedResponse, GetPayloadResponse,
+    GetPayloadResponseCapella, GetPayloadResponseMerge, PayloadAttributes, PayloadAttributesV1,
+    PayloadAttributesV2, PayloadId, PayloadStatusV1, PayloadStatusV1Status,
+};
+use crate::serde_utils as eth2_serde_utils;
 use serde::{Deserialize, Serialize};
 use strum::EnumString;
 use superstruct::superstruct;
-use crate::serde_utils as eth2_serde_utils;
-use crate::engine_api::ethspec::EthSpec;
-use crate::engine_api::{ ForkchoiceState,
-ForkchoiceUpdatedResponse,
-PayloadStatusV1,
-PayloadStatusV1Status,
-PayloadAttributesV2,
-PayloadAttributesV1,
-PayloadAttributes,
-Error,
-GetPayloadResponse,
-GetPayloadResponseCapella,
-GetPayloadResponseMerge,
-PayloadId};
 
 use crate::engine_api::execution_payload::{
-    ExecutionPayload,
-    ExecutionPayloadMerge, ExecutionPayloadEip4844, ExecutionPayloadCapella,
-    Transaction, Hash256
+    ExecutionPayload, ExecutionPayloadCapella, ExecutionPayloadEip4844, ExecutionPayloadMerge,
+    Hash256, Transaction,
 };
 use crate::engine_api::withdrawal::Withdrawal;
 
-
-use ssz_types::{FixedVector, VariableList};
 use ethereum_types::Address;
+use ssz_types::{FixedVector, VariableList};
 
 use ethereum_types::U256 as Uint256;
 
@@ -50,7 +41,6 @@ impl ExecutionBlockHash {
         self.0
     }
 }
-
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]

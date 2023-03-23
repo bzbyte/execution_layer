@@ -1,15 +1,15 @@
-use superstruct::superstruct;
-use derivative::Derivative;
-use ethereum_types::Address;
-use serde_derive::{Deserialize, Serialize};
-use ssz_types::{VariableList, FixedVector};
-pub use ethereum_types::H256 as Hash256;
-pub use ethereum_types::U256 as Uint256;
-use crate::serde_utils as eth2_serde_utils;
 use crate::engine_api::ethspec::EthSpec;
-use crate::engine_api::Error;
 use crate::engine_api::json_structures::ExecutionBlockHash;
 use crate::engine_api::withdrawal::Withdrawal;
+use crate::engine_api::Error;
+use crate::serde_utils as eth2_serde_utils;
+use derivative::Derivative;
+use ethereum_types::Address;
+pub use ethereum_types::H256 as Hash256;
+pub use ethereum_types::U256 as Uint256;
+use serde_derive::{Deserialize, Serialize};
+use ssz_types::{FixedVector, VariableList};
+use superstruct::superstruct;
 
 pub type Transaction<N> = VariableList<u8, N>;
 pub type Transactions<T> = VariableList<
@@ -17,22 +17,12 @@ pub type Transactions<T> = VariableList<
     <T as EthSpec>::MaxTransactionsPerPayload,
 >;
 
-
 pub type Withdrawals<T> = VariableList<Withdrawal, <T as EthSpec>::MaxWithdrawalsPerPayload>;
-
-
 
 #[superstruct(
     variants(Merge, Capella, Eip4844),
     variant_attributes(
-        derive(
-            Default,
-            Debug,
-            Clone,
-            Serialize,
-            Deserialize,
-            Derivative,
-        ),
+        derive(Default, Debug, Clone, Serialize, Deserialize, Derivative,),
         derivative(PartialEq, Hash(bound = "T: EthSpec")),
         serde(bound = "T: EthSpec", deny_unknown_fields),
     ),
@@ -41,9 +31,7 @@ pub type Withdrawals<T> = VariableList<Withdrawal, <T as EthSpec>::MaxWithdrawal
     map_into(FullPayload, BlindedPayload),
     map_ref_into(ExecutionPayloadHeader)
 )]
-#[derive(
-    Debug, Clone, Serialize, Deserialize, Derivative
-)]
+#[derive(Debug, Clone, Serialize, Deserialize, Derivative)]
 #[derivative(PartialEq, Hash(bound = "T: EthSpec"))]
 #[serde(bound = "T: EthSpec", untagged)]
 pub struct ExecutionPayload<T: EthSpec> {

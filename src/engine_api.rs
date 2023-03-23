@@ -5,13 +5,13 @@ pub mod http;
 pub mod json_structures;
 pub mod sensitive_url;
 pub mod withdrawal;
-use crate::serde_utils as eth2_serde_utils;
 use crate::engine_api::http::{
     ENGINE_EXCHANGE_TRANSITION_CONFIGURATION_V1, ENGINE_FORKCHOICE_UPDATED_V1,
     ENGINE_FORKCHOICE_UPDATED_V2, ENGINE_GET_PAYLOAD_V1, ENGINE_GET_PAYLOAD_V2,
     ENGINE_NEW_PAYLOAD_V1, ENGINE_NEW_PAYLOAD_V2,
 };
 use crate::engine_api::json_structures::{JsonExecutionPayloadV1, JsonExecutionPayloadV2};
+use crate::serde_utils as eth2_serde_utils;
 pub use ethers_core::types::Transaction;
 use ethers_core::utils::rlp::{self, Decodable, Rlp};
 use http::deposit_methods::RpcError;

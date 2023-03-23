@@ -1,3 +1,4 @@
+use crate::serde_utils as eth2_serde_utils;
 use serde_derive::{Deserialize, Serialize};
 use ssz_types::typenum::{
     bit::B0, UInt, Unsigned, U0, U1024, U1048576, U1073741824, U1099511627776, U128, U16,
@@ -5,7 +6,6 @@ use ssz_types::typenum::{
 };
 use std::fmt::{self, Debug};
 use std::str::FromStr;
-use crate::serde_utils as eth2_serde_utils;
 pub type U5000 = UInt<UInt<UInt<U625, B0>, B0>, B0>; // 625 * 8 = 5000
 
 #[derive(
