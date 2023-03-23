@@ -62,7 +62,7 @@ mod test {
 
     #[derive(Debug, Serialize, Deserialize)]
     struct Obj {
-        #[serde(with = "crate::quoted_u64_vec")]
+        #[serde(with = "crate::serde_utils::quoted_u64_vec")]
         values: Vec<u64>,
     }
 
