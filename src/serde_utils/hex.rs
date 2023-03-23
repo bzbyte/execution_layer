@@ -4,6 +4,7 @@ use serde::de::{self, Visitor};
 use std::fmt;
 
 /// Encode `data` as a 0x-prefixed hex string.
+#[allow(dead_code)]
 pub fn encode<T: AsRef<[u8]>>(data: T) -> String {
     let hex = hex::encode(data);
 

@@ -5,6 +5,7 @@
 use crate::serde_utils::bytes_4_hex;
 use serde::{Deserializer, Serializer};
 
+#[allow(dead_code)]
 pub fn serialize<S>(num: &u32, serializer: S) -> Result<S::Ok, S::Error>
 where
     S: Serializer,
@@ -13,6 +14,7 @@ where
     serializer.serialize_str(&hex)
 }
 
+#[allow(dead_code)]
 pub fn deserialize<'de, D>(deserializer: D) -> Result<u32, D::Error>
 where
     D: Deserializer<'de>,

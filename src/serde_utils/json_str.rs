@@ -6,6 +6,7 @@ use serde::{
 };
 
 /// Serialize as a JSON object within a string.
+#[allow(dead_code)]
 pub fn serialize<T, S>(value: &T, serializer: S) -> Result<S::Ok, S::Error>
 where
     S: Serializer,
@@ -15,6 +16,7 @@ where
 }
 
 /// Deserialize a JSON object embedded in a string.
+#[allow(dead_code)]
 pub fn deserialize<'de, T, D>(deserializer: D) -> Result<T, D::Error>
 where
     D: Deserializer<'de>,

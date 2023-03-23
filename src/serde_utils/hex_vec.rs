@@ -5,6 +5,7 @@
 use crate::serde_utils::hex::PrefixedHexVisitor;
 use serde::{Deserializer, Serializer};
 
+#[allow(dead_code)]
 pub fn serialize<S>(bytes: &[u8], serializer: S) -> Result<S::Ok, S::Error>
 where
     S: Serializer,
@@ -15,6 +16,7 @@ where
     serializer.serialize_str(&hex_string)
 }
 
+#[allow(dead_code)]
 pub fn deserialize<'de, D>(deserializer: D) -> Result<Vec<u8>, D::Error>
 where
     D: Deserializer<'de>,

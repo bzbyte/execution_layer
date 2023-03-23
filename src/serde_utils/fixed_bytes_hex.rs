@@ -10,8 +10,10 @@ macro_rules! bytes_hex {
     ($num_bytes: tt) => {
         use super::*;
 
+	#[allow(dead_code)]
         const BYTES_LEN: usize = $num_bytes;
 
+	#[allow(dead_code)]
         pub fn serialize<S>(bytes: &[u8; BYTES_LEN], serializer: S) -> Result<S::Ok, S::Error>
         where
             S: Serializer,
@@ -22,6 +24,7 @@ macro_rules! bytes_hex {
             serializer.serialize_str(&hex_string)
         }
 
+	#[allow(dead_code)]
         pub fn deserialize<'de, D>(deserializer: D) -> Result<[u8; BYTES_LEN], D::Error>
         where
             D: Deserializer<'de>,

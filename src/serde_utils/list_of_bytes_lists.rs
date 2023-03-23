@@ -30,6 +30,7 @@ impl<'a> serde::de::Visitor<'a> for ListOfBytesListVisitor {
     }
 }
 
+#[allow(dead_code)]
 pub fn serialize<S>(value: &[Vec<u8>], serializer: S) -> Result<S::Ok, S::Error>
 where
     S: Serializer,
@@ -41,6 +42,7 @@ where
     seq.end()
 }
 
+#[allow(dead_code)]
 pub fn deserialize<'de, D>(deserializer: D) -> Result<Vec<Vec<u8>>, D::Error>
 where
     D: Deserializer<'de>,
