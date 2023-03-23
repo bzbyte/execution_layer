@@ -1,3 +1,29 @@
+use crate::engine_api::ethspec::EthSpec;
+use crate::engine_api::execution_payload::ExecutionPayload;
+use crate::engine_api::execution_payload::ExecutionPayloadCapella;
+use crate::engine_api::execution_payload::ExecutionPayloadMerge;
+use crate::engine_api::execution_payload::Hash256;
+use crate::engine_api::http::{
+    ENGINE_EXCHANGE_TRANSITION_CONFIGURATION_V1, ENGINE_FORKCHOICE_UPDATED_V1,
+    ENGINE_FORKCHOICE_UPDATED_V2, ENGINE_GET_PAYLOAD_V1, ENGINE_GET_PAYLOAD_V2,
+    ENGINE_NEW_PAYLOAD_V1, ENGINE_NEW_PAYLOAD_V2,
+};
+use crate::engine_api::json_structures::ExecutionBlockHash;
+use crate::engine_api::json_structures::{JsonExecutionPayloadV1, JsonExecutionPayloadV2};
+use crate::engine_api::withdrawal::Withdrawal;
+use crate::serde_utils as eth2_serde_utils;
+use ethereum_types::U256 as Uint256;
+pub use ethers_core::types::Transaction;
+use ethers_core::utils::rlp::{self, Decodable, Rlp};
+use http::deposit_methods::RpcError;
+pub use json_structures::{JsonWithdrawal, TransitionConfigurationV1};
+use reqwest::StatusCode;
+use serde::{Deserialize, Serialize};
+use ssz_types::{FixedVector, VariableList};
+use std::convert::TryFrom;
+use strum::IntoStaticStr;
+use superstruct::superstruct;
+
 pub mod auth;
 pub mod ethspec;
 pub mod execution_payload;
@@ -5,39 +31,7 @@ pub mod http;
 pub mod json_structures;
 pub mod sensitive_url;
 pub mod withdrawal;
-use crate::engine_api::http::{
-    ENGINE_EXCHANGE_TRANSITION_CONFIGURATION_V1, ENGINE_FORKCHOICE_UPDATED_V1,
-    ENGINE_FORKCHOICE_UPDATED_V2, ENGINE_GET_PAYLOAD_V1, ENGINE_GET_PAYLOAD_V2,
-    ENGINE_NEW_PAYLOAD_V1, ENGINE_NEW_PAYLOAD_V2,
-};
-use crate::engine_api::json_structures::{JsonExecutionPayloadV1, JsonExecutionPayloadV2};
-use crate::serde_utils as eth2_serde_utils;
-pub use ethers_core::types::Transaction;
-use ethers_core::utils::rlp::{self, Decodable, Rlp};
-use http::deposit_methods::RpcError;
-pub use json_structures::{JsonWithdrawal, TransitionConfigurationV1};
-use reqwest::StatusCode;
-use serde::{Deserialize, Serialize};
-use std::convert::TryFrom;
-use strum::IntoStaticStr;
-use superstruct::superstruct;
-// pub use types::{
-//     Address, EthSpec, ExecutionBlockHash, ExecutionPayload, ExecutionPayloadCapella,
-//     ExecutionPayloadEip4844, ExecutionPayloadHeader, ExecutionPayloadMerge, ExecutionPayloadRef,
-//     FixedVector, ForkName, Hash256, Uint256, VariableList, Withdrawal,
-// };
-
-use crate::engine_api::ethspec::EthSpec;
-use crate::engine_api::execution_payload::ExecutionPayload;
-use crate::engine_api::execution_payload::ExecutionPayloadCapella;
-use crate::engine_api::execution_payload::ExecutionPayloadMerge;
-use crate::engine_api::execution_payload::Hash256;
-use crate::engine_api::json_structures::ExecutionBlockHash;
-use crate::engine_api::withdrawal::Withdrawal;
-use ethereum_types::Address;
-use ethereum_types::U256 as Uint256;
-use ssz_types::{FixedVector, VariableList};
-
+pub use ethereum_types::Address;
 pub const LATEST_TAG: &str = "latest";
 
 #[derive(Copy, Clone, PartialEq, Debug)]

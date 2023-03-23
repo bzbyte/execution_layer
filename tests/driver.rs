@@ -1,15 +1,13 @@
 use execution_layer::engine_api::{
     auth::{Auth, JwtKey},
+    ethspec::MainnetEthSpec,
+    execution_payload::Hash256,
     http::HttpJsonRpc,
-    BlockByNumberQuery, PayloadAttributes, PayloadAttributesV1, LATEST_TAG,
+    json_structures::ExecutionBlockHash,
+    sensitive_url::SensitiveUrl,
+    Address, BlockByNumberQuery, ForkchoiceState, PayloadAttributes, PayloadAttributesV1,
+    LATEST_TAG,
 };
-
-use ethereum_types::Address;
-use execution_layer::engine_api::ethspec::MainnetEthSpec;
-use execution_layer::engine_api::execution_payload::Hash256;
-use execution_layer::engine_api::json_structures::ExecutionBlockHash;
-use execution_layer::engine_api::sensitive_url::SensitiveUrl;
-use execution_layer::engine_api::ForkchoiceState;
 
 pub const JWT_SECRET: [u8; 32] = [0u8; 32];
 
