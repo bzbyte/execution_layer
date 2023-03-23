@@ -1,6 +1,9 @@
 pub mod auth;
+pub mod ethspec;
+pub mod execution_payload;
 pub mod http;
 pub mod json_structures;
+pub mod withdrawal;
 
 use crate::engine_api::http::{
     ENGINE_EXCHANGE_TRANSITION_CONFIGURATION_V1, ENGINE_FORKCHOICE_UPDATED_V1,
@@ -55,7 +58,6 @@ pub enum Error {
     DeserializeTransaction(ssz_types::Error),
     DeserializeTransactions(ssz_types::Error),
     DeserializeWithdrawals(ssz_types::Error),
-    //BuilderApi(builder_client::Error),
     IncorrectStateVariant,
     RequiredMethodUnsupported(&'static str),
     UnsupportedForkVariant(String),

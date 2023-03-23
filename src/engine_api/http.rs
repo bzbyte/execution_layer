@@ -8,11 +8,10 @@ use sensitive_url::SensitiveUrl;
 use serde::de::DeserializeOwned;
 use serde_json::json;
 use std::collections::HashSet;
-use tokio::sync::Mutex;
 use std::fmt::{self, Display, Formatter};
+use tokio::sync::Mutex;
 
 use std::time::{Duration, Instant};
-use types::EthSpec;
 
 pub use reqwest::Client;
 
@@ -79,7 +78,6 @@ impl Display for ForkName {
     }
 }
 
-
 pub static LIGHTHOUSE_CAPABILITIES: &[&str] = &[
     ENGINE_NEW_PAYLOAD_V1,
     ENGINE_NEW_PAYLOAD_V2,
@@ -107,12 +105,12 @@ pub static PRE_CAPELLA_ENGINE_CAPABILITIES: EngineCapabilities = EngineCapabilit
 /// state of the deposit contract.
 pub mod deposit_methods {
     use crate::engine_api::http::HttpJsonRpc;
+    use crate::engine_api::execution_payload::Hash256;
     use serde::{Deserialize, Serialize};
     use serde_json::{json, Value};
     use std::fmt;
     use std::str::FromStr;
     use std::time::Duration;
-    use types::Hash256;
 
     /// `keccak("DepositEvent(bytes,bytes,bytes,bytes,bytes)")`
     pub const DEPOSIT_EVENT_TOPIC: &str =
