@@ -1,9 +1,6 @@
 use serde_derive::{Deserialize, Serialize};
-use ssz_derive::{Decode, Encode};
 use ethereum_types::Address;
-
 #[derive(
-    arbitrary::Arbitrary,
     Debug,
     PartialEq,
     Eq,
@@ -11,8 +8,6 @@ use ethereum_types::Address;
     Clone,
     Serialize,
     Deserialize,
-    Encode,
-    Decode,
 )]
 pub struct Withdrawal {
     #[serde(with = "eth2_serde_utils::quoted_u64")]

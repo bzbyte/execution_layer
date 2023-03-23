@@ -5,12 +5,13 @@ use execution_layer::engine_api::{
 };
 
 use execution_layer::engine_api::ForkchoiceState;
-
+use execution_layer::engine_api::json_structures::ExecutionBlockHash;
+use ethereum_types::Address;
+use execution_layer::engine_api::ethspec::MainnetEthSpec;
 use sensitive_url::SensitiveUrl;
-use types::{Address, ExecutionBlockHash, Hash256, MainnetEthSpec};
+use execution_layer::engine_api::execution_payload::Hash256;
 
 pub const JWT_SECRET: [u8; 32] = [0u8; 32];
-
 
 fn driver() {
     let rpc_url = SensitiveUrl::parse("http://localhost:8551").unwrap();
@@ -42,14 +43,14 @@ fn driver() {
             let fchoice_result = rpc_client.forkchoice_updated_v2(f, attr).await.unwrap();
             //println!("Fork choice {fchoice_result:?}");
 
-	    let payload =  rpc_client
+            let payload = rpc_client
                 .get_payload_v2::<MainnetEthSpec>(
-		    execution_layer::engine_api::http::ForkName::Merge,
-		    fchoice_result.payload_id.unwrap())
+                    execution_layer::engine_api::http::ForkName::Merge,
+                    fchoice_result.payload_id.unwrap(),
+                )
                 .await
                 .unwrap()
                 .into();
-
 
             //println!("New payload {payload:?}");
             let payload_result = rpc_client.new_payload_v2(payload).await.unwrap();

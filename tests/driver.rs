@@ -5,9 +5,11 @@ use execution_layer::engine_api::{
 };
 
 use execution_layer::engine_api::ForkchoiceState;
-
 use sensitive_url::SensitiveUrl;
-use types::{Address, ExecutionBlockHash, Hash256, MainnetEthSpec};
+use execution_layer::engine_api::json_structures::ExecutionBlockHash;
+use ethereum_types::{Address};
+use execution_layer::engine_api::ethspec::MainnetEthSpec;
+use execution_layer::engine_api::execution_payload::Hash256;
 
 pub const JWT_SECRET: [u8; 32] = [0u8; 32];
 
@@ -45,7 +47,7 @@ fn driver(api_type: API) {
                 prev_randao: Hash256::zero(),
                 suggested_fee_recipient: Address::repeat_byte(0),
             }));
-            let fchoice_result = rpc_client.forkchoice_updated_v1(f, attr).await.unwrap();
+            let fchoice_result = rpc_client.forkchoice_updated_v2(f, attr).await.unwrap();
             println!("Fork choice {fchoice_result:?}");
 
             let payload = match api_type {
@@ -77,7 +79,7 @@ fn driver(api_type: API) {
                 suggested_fee_recipient: Address::repeat_byte(0),
             }));
             let _fchoice_result = rpc_client
-                .forkchoice_updated_v1(next_fork_choice, attr)
+                .forkchoice_updated_v2(next_fork_choice, attr)
                 .await
                 .unwrap();
         }

@@ -17,7 +17,6 @@ PayloadAttributes,
 Error,
 GetPayloadResponse,
 GetPayloadResponseCapella,
-GetPayloadResponseEip4844,
 GetPayloadResponseMerge,
 PayloadId};
 
@@ -34,9 +33,28 @@ use ethereum_types::Address;
 
 use ethereum_types::U256 as Uint256;
 
-#[derive(Default, Clone, Copy, Serialize, Deserialize, Eq, PartialEq, Hash)]
+#[derive(Default, Clone, Copy, Serialize, Deserialize, Eq, PartialEq, Hash, Debug)]
 #[serde(transparent)]
 pub struct ExecutionBlockHash(Hash256);
+
+impl ExecutionBlockHash {
+    pub fn zero() -> Self {
+        Self(Hash256::zero())
+    }
+
+    pub fn repeat_byte(b: u8) -> Self {
+        Self(Hash256::repeat_byte(b))
+    }
+
+    pub fn from_root(root: Hash256) -> Self {
+        Self(root)
+    }
+
+    pub fn into_root(self) -> Hash256 {
+        self.0
+    }
+}
+
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -308,7 +326,7 @@ impl<T: EthSpec> From<JsonExecutionPayload<T>> for ExecutionPayload<T> {
 }
 
 #[superstruct(
-    variants(V1, V2, V3),
+    variants(V1, V2),
     variant_attributes(
         derive(Debug, PartialEq, Serialize, Deserialize),
         serde(bound = "T: EthSpec", rename_all = "camelCase")
@@ -323,8 +341,6 @@ pub struct JsonGetPayloadResponse<T: EthSpec> {
     pub execution_payload: JsonExecutionPayloadV1<T>,
     #[superstruct(only(V2), partial_getter(rename = "execution_payload_v2"))]
     pub execution_payload: JsonExecutionPayloadV2<T>,
-    #[superstruct(only(V3), partial_getter(rename = "execution_payload_v3"))]
-    pub execution_payload: JsonExecutionPayloadV3<T>,
     #[serde(with = "eth2_serde_utils::u256_hex_be")]
     pub block_value: Uint256,
 }
@@ -340,12 +356,6 @@ impl<T: EthSpec> From<JsonGetPayloadResponse<T>> for GetPayloadResponse<T> {
             }
             JsonGetPayloadResponse::V2(response) => {
                 GetPayloadResponse::Capella(GetPayloadResponseCapella {
-                    execution_payload: response.execution_payload.into(),
-                    block_value: response.block_value,
-                })
-            }
-            JsonGetPayloadResponse::V3(response) => {
-                GetPayloadResponse::Eip4844(GetPayloadResponseEip4844 {
                     execution_payload: response.execution_payload.into(),
                     block_value: response.block_value,
                 })

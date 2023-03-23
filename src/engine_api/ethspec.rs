@@ -140,28 +140,6 @@ pub trait EthSpec:
 
     fn spec_name() -> EthSpecId;
 
-    fn genesis_epoch() -> Epoch {
-        Epoch::new(Self::GenesisEpoch::to_u64())
-    }
-
-    fn get_committee_count_per_slot_with(
-        active_validator_count: usize,
-        max_committees_per_slot: usize,
-        target_committee_size: usize,
-    ) -> usize {
-        let slots_per_epoch = Self::SlotsPerEpoch::to_usize();
-
-        Ok(std::cmp::max(
-            1,
-            std::cmp::min(
-                max_committees_per_slot,
-                active_validator_count
-                    .safe_div(slots_per_epoch)?
-                    .safe_div(target_committee_size)?,
-            ),
-        ))
-    }
-
     /// Returns the minimum number of validators required for this spec.
     ///
     /// This is the _absolute_ minimum, the number required to make the chain operate in the most

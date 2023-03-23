@@ -11,7 +11,7 @@ use crate::engine_api::http::{
     ENGINE_NEW_PAYLOAD_V1, ENGINE_NEW_PAYLOAD_V2,
 };
 use crate::engine_api::json_structures::{
-    JsonExecutionPayloadV1, JsonExecutionPayloadV2, JsonExecutionPayloadV3,
+    JsonExecutionPayloadV1, JsonExecutionPayloadV2,
 };
 pub use ethers_core::types::Transaction;
 use ethers_core::utils::rlp::{self, Decodable, Rlp};
@@ -22,11 +22,23 @@ use serde::{Deserialize, Serialize};
 use std::convert::TryFrom;
 use strum::IntoStaticStr;
 use superstruct::superstruct;
-pub use types::{
-    Address, EthSpec, ExecutionBlockHash, ExecutionPayload, ExecutionPayloadCapella,
-    ExecutionPayloadEip4844, ExecutionPayloadHeader, ExecutionPayloadMerge, ExecutionPayloadRef,
-    FixedVector, ForkName, Hash256, Uint256, VariableList, Withdrawal,
-};
+// pub use types::{
+//     Address, EthSpec, ExecutionBlockHash, ExecutionPayload, ExecutionPayloadCapella,
+//     ExecutionPayloadEip4844, ExecutionPayloadHeader, ExecutionPayloadMerge, ExecutionPayloadRef,
+//     FixedVector, ForkName, Hash256, Uint256, VariableList, Withdrawal,
+// };
+
+use crate::engine_api::execution_payload::Hash256;
+use crate::engine_api::execution_payload::ExecutionPayload;
+use crate::engine_api::ethspec::EthSpec;
+use crate::engine_api::json_structures::ExecutionBlockHash;
+use crate::engine_api::withdrawal::Withdrawal;
+use crate::engine_api::execution_payload::ExecutionPayloadMerge;
+use crate::engine_api::execution_payload::ExecutionPayloadCapella;
+use ethereum_types::Address;
+use ethereum_types::U256 as Uint256;
+use ssz_types::{FixedVector, VariableList};
+
 pub const LATEST_TAG: &str = "latest";
 
 #[derive(Copy, Clone, PartialEq, Debug)]
@@ -323,10 +335,9 @@ pub struct ProposeBlindedBlockResponse {
 }
 
 #[superstruct(
-    variants(Merge, Capella, Eip4844),
+    variants(Merge, Capella),
     variant_attributes(derive(Clone, Debug, PartialEq),),
     map_into(ExecutionPayload),
-    map_ref_into(ExecutionPayloadRef),
     cast_error(ty = "Error", expr = "Error::IncorrectStateVariant"),
     partial_getter_error(ty = "Error", expr = "Error::IncorrectStateVariant")
 )]
@@ -336,18 +347,9 @@ pub struct GetPayloadResponse<T: EthSpec> {
     pub execution_payload: ExecutionPayloadMerge<T>,
     #[superstruct(only(Capella), partial_getter(rename = "execution_payload_capella"))]
     pub execution_payload: ExecutionPayloadCapella<T>,
-    #[superstruct(only(Eip4844), partial_getter(rename = "execution_payload_eip4844"))]
-    pub execution_payload: ExecutionPayloadEip4844<T>,
     pub block_value: Uint256,
 }
 
-impl<'a, T: EthSpec> From<GetPayloadResponseRef<'a, T>> for ExecutionPayloadRef<'a, T> {
-    fn from(response: GetPayloadResponseRef<'a, T>) -> Self {
-        map_get_payload_response_ref_into_execution_payload_ref!(&'a _, response, |inner, cons| {
-            cons(&inner.execution_payload)
-        })
-    }
-}
 
 impl<T: EthSpec> From<GetPayloadResponse<T>> for ExecutionPayload<T> {
     fn from(response: GetPayloadResponse<T>) -> Self {
@@ -368,19 +370,10 @@ impl<T: EthSpec> From<GetPayloadResponse<T>> for (ExecutionPayload<T>, Uint256) 
                 ExecutionPayload::Capella(inner.execution_payload),
                 inner.block_value,
             ),
-            GetPayloadResponse::Eip4844(inner) => (
-                ExecutionPayload::Eip4844(inner.execution_payload),
-                inner.block_value,
-            ),
         }
     }
 }
 
-impl<T: EthSpec> GetPayloadResponse<T> {
-    pub fn execution_payload_ref(&self) -> ExecutionPayloadRef<T> {
-        self.to_ref().into()
-    }
-}
 
 /// Serializable version of GetPayloadResponse.
 /// Per-version payload + block number
@@ -388,7 +381,6 @@ impl<T: EthSpec> GetPayloadResponse<T> {
 pub enum GetJsonPayloadResponse<T: EthSpec> {
     V1(JsonExecutionPayloadV1<T>, Uint256),
     V2(JsonExecutionPayloadV2<T>, Uint256),
-    V3(JsonExecutionPayloadV3<T>, Uint256),
 }
 
 impl<T: EthSpec> From<GetJsonPayloadResponse<T>> for ExecutionPayload<T> {
@@ -403,13 +395,6 @@ impl<T: EthSpec> From<GetJsonPayloadResponse<T>> for ExecutionPayload<T> {
             }
             GetJsonPayloadResponse::V2(json_payload, block_value) => {
                 GetPayloadResponse::Capella(GetPayloadResponseCapella {
-                    execution_payload: json_payload.into(),
-                    block_value,
-                })
-                .into()
-            }
-            GetJsonPayloadResponse::V3(json_payload, block_value) => {
-                GetPayloadResponse::Eip4844(GetPayloadResponseEip4844 {
                     execution_payload: json_payload.into(),
                     block_value,
                 })
