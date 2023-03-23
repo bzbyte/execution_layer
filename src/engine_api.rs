@@ -13,10 +13,10 @@ use crate::engine_api::json_structures::{JsonExecutionPayloadV1, JsonExecutionPa
 use crate::engine_api::withdrawal::Withdrawal;
 use crate::serde_utils as eth2_serde_utils;
 use ethereum_types::U256 as Uint256;
-pub use ethers_core::types::Transaction;
+use ethers_core::types::Transaction;
 use ethers_core::utils::rlp::{self, Decodable, Rlp};
 use http::deposit_methods::RpcError;
-pub use json_structures::{JsonWithdrawal, TransitionConfigurationV1};
+use json_structures::JsonWithdrawal;
 use reqwest::StatusCode;
 use serde::{Deserialize, Serialize};
 use ssz_types::{FixedVector, VariableList};
