@@ -23,7 +23,7 @@ strum = "0.24.0"
 tokio = { version = "1.10.0", features = ["full"] }
 ssz_types = "0.5.2"
 ethereum-types = "0.14.1"
-serde_derive = "1.0.158"
+serde_derive = "1.0.152"
 derivative = "2.2.0"
 typenum = "1.16.0"
 url = "2.3.1"
